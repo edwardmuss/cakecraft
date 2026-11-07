@@ -134,14 +134,23 @@ if (!function_exists('getInvalidPhoneNumber')) {
 
 function maskPhoneNumber($phone)
 {
-    return str_repeat('*', strlen($phone) - 2) . substr($phone, -2);
+    $phone = (string) $phone;
+    $len = strlen($phone);
+    if ($len <= 2) {
+        return str_repeat('*', $len);
+    }
+    return str_repeat('*', $len - 2) . substr($phone, -2);
 }
 
 function maskEmail($email)
 {
-    $emailParts = explode("@", $email);
-    $name = substr($emailParts[0], 0, 3); // Show only first 3 characters
-    return $name . str_repeat('*', strlen($emailParts[0]) - 3) . '@' . $emailParts[1];
+    $email = (string) $email;
+    if ($email === '' || strpos($email, '@') === false) {
+        return str_repeat('*', strlen($email));
+    }
+    [$local, $domain] = explode('@', $email, 2);
+    $visible = substr($local, 0, 3);
+    return $visible . str_repeat('*', max(0, strlen($local) - 3)) . '@' . $domain;
 }
 
 if (!function_exists('updateCounters')) {
